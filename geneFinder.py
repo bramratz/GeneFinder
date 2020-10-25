@@ -36,51 +36,50 @@ def loadSeq(filename):
                 seqList.append(line) # Append all other lines as these represent sequences to main list 
     return "".join(seqList) # Return list joined as a string 
 
-### Base Compliments ###
+# -------------------------------------------------------------------
+    
+### Functions for working with double stranded DNA
+    
+# -------------------------------------------------------------------
+
+# Find the complimentary base of a given nucleotide
 def compBase(N: str) -> str:
     """
-    Given a nucleotide base (A, C, G, T) returns the 
-    compliment of that base
+    Given a nucleotide base (A, C, G, T) returns the compliment of that 
+    base. ie:
     
-    Given A -> Returns T
+    Given A -> Return T
     """
     # Dictionary of complimentary bases
     baseDict = {'A': 'T', 
                 'C': 'G',
                 'G': 'C',
                 'T': 'A'}
-    return baseDict[N] # Return compliment
-
-### Reverse Compliments ###
-def reverse(s: str) -> str:
-    """
-    Given a DNA sequence, s, returns a string that is
-    the reverse of s
     
-    Given "AATT" -> Returns "TTAA"
-    """
-    compliment = [] # Initialize list to hold bases in reverse order
-    # Iterate string in reverse, end to start
-    for i in range(len(s)-1, -1, -1):
-        compliment.append(s[i]) # Add base to compliment list 
-    return "".join(compliment) # return compliment 
+    return baseDict[N] 
 
+# Find the reverse compliment of a nucleotide string
 def reverseCompliment(DNA: str) -> str:
     """
     Given a DNA sequence (5' -> 3') returns the reverse
-    compliment. ie. The compliment of the DNA seq in 
-    (5' -> 3')
+    compliment of the DNA seq in the (5' -> 3') direction. ie:
     
     Given "TTGAC" ->  Returns "GTCAA"
     """
-    compliment = '' # Initialize empty string to hold complimentary seq
-    for i in DNA:
-        compliment += compBase(i) # Append complimentary base to string
+    compliment = '' # To hold complimentary seq
     
-    return reverse(compliment) # Return the reverse of the complimentary string
+    for i in DNA:
+        compliment += compBase(i) # Add complimentary base to string
+    
+    return compliment[::-1] # Return the seq in reverse
 
+assert reverseCompliment('AACC') == 'GGTT'
 
-### Finding ORFs ###
+# ------------------------------------------------------------------
+    
+### Functions for finding ORFs
+
+# ------------------------------------------------------------------
 
 def restOfORF(DNA: str) -> str:
     """
@@ -93,6 +92,7 @@ def restOfORF(DNA: str) -> str:
     If no stop codon found returns the whole sequence
     """
     ORF = '' # empty string for ORF
+    
     for i in range(0, len(DNA)-2, 3):
         # if codon isn't a stop codon append the codon to ORF
         if DNA[i:i+3] not in ['TAG', 'TAA', 'TGA']:
