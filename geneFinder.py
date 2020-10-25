@@ -13,6 +13,7 @@ Created on Wed Jul 29 07:25:04 2020
 # ---------------------------------------------------------------------
 
 import random
+from aminoAcids import *
 
 # ---------------------------------------------------------------------
 
@@ -75,23 +76,53 @@ def reverseCompliment(DNA: str) -> str:
 
 assert reverseCompliment('AACC') == 'GGTT'
 
+# -----------------------------------------------------------------
+
+# Functions for converting DNA sequences to amino acid sequences
+
+# -----------------------------------------------------------------
+
+# Convert a DNA codon to an amino acid
+def amino(codon: str) -> str:
+    """
+    Given a string of three bases (codon) returnsthe corresponding amino 
+    acid.
+    """
+    # Only 20 aa, so iterate through 0 - 20
+    for i in range(0, 21, 1):
+        for val in codons[i]: # Iterate codon or codons that correspond to the aa at that index
+            if codon == val: # Stop if match found
+                return aa[i]
+
+# Convert a DNA sequence to an amino acid sequence
+def codingStrandToAA(DNA: str) -> str:
+    """
+    Given a DNA sequence returns the corresponding string of amino acids
+    """
+    AAstring = ''
+    
+    # Iterate length of DNA sequence 3 at a time (codon at a time)
+    for i in range(0, len(DNA)-2, 3):
+        AAstring += amino(DNA[i:i+3]) # Call amino function to determine correct aa for codon
+    
+    return AAstring   
+
 # ------------------------------------------------------------------
     
 ### Functions for finding ORFs
 
 # ------------------------------------------------------------------
 
+# Finds stop codons. Returns ORFs between start codon and stop codon.
 def restOfORF(DNA: str) -> str:
     """
-    Given a DNA sequence finds the first in frame stop
-    codon and returns the sequence from the start up 
-    to, but not including the stop codon. This is an 
-    ORF.
-    Assumes that the DNA sequence is 5'->3' and 
-    that it begins aith a start codon, 'ATG'.
-    If no stop codon found returns the whole sequence
+    Given a DNA sequence finds the first in frame stop codon and returns 
+    the sequence from the start up to, but not including the stop codon. 
+    This is an ORF. Assumes that the DNA sequence is 5'->3' and 
+    that it begins aith a start codon, 'ATG'. If no stop codon found 
+    returns the whole sequence.
     """
-    ORF = '' # empty string for ORF
+    ORF = '' # To hold ORF str
     
     for i in range(0, len(DNA)-2, 3):
         # if codon isn't a stop codon append the codon to ORF
@@ -100,25 +131,29 @@ def restOfORF(DNA: str) -> str:
         # Stop if a stop codon is found
         elif DNA[i:i+3] in ['TAG', 'TAA', 'TGA']:
             break 
+    
     return ORF
 
+# Find 
 def oneFrameV2(DNA: str) -> str:
     """
-    Given a DNA sequence searches from position 0, 3
-    bases at a time for a start codon, 'ATG'. Calls
-    restOfORF to find the ORF associated with that start
-    codon and stores the sequence in a list.
-    Ignores nested start codons. If nested start codons
-    are present will only return the longest one.
-    Returns a list of all ORF found in the DNA sequence.
+    Given a DNA sequence searches from position 0, 3 bases at a time for a 
+    start codon, 'ATG'. Calls restOfORF to find the ORF associated with that 
+    startcodon and stores the sequence in a list. Ignores nested start 
+    codons. If nested start codons are present will only return the longest 
+    one. Returns a list of all ORF found in the DNA sequence.
     """
-    frames = [] # empty list for ORFs found
-    frameIdx = 0  # length of DNA seq to iterate
+    frames = [] # List for ORFs found
+    frameIdx = 0  # Counter for string index
+    
     while frameIdx < len(DNA) - 2:
+        
+        # Calls restOfORF if first start codon found
         if DNA[frameIdx:frameIdx+3] == "ATG":
             ORF = restOfORF(DNA[frameIdx:])
-            frames.append(ORF)
-            frameIdx += len(ORF)
+            frames.append(ORF) # Appends the ORF to frames list
+            frameIdx += len(ORF) # Increases index by length of ORF
+        # Increases index by codon length otherwise
         else:
             frameIdx += 3
     return frames 
