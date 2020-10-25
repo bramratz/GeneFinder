@@ -134,7 +134,7 @@ def restOfORF(DNA: str) -> str:
     
     return ORF
 
-# Find 
+# Find ORFs in a DNA sequence
 def oneFrameV2(DNA: str) -> str:
     """
     Given a DNA sequence searches from position 0, 3 bases at a time for a 
