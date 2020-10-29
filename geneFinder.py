@@ -16,30 +16,6 @@ import random
 import sys
 from aminoAcids import *
 
-
-# ---------------------------------------------------------------------
-
-### Loading data
-
-# ---------------------------------------------------------------------
-
-# Loads sequences from FASTA file one sequence at a time
-def loadSeq(filename):
-    """
-    Given a fasta file returns the sequence associated
-    with the ID
-    """
-    seqList = [] # Create list to save sequence to
-    with open(filename) as f:
-        # Save lines in fasta as list 
-        lines = [item.strip() for item in f.readlines() if not item == '']
-        for line in lines:
-            if line.startswith('>'):
-                pass # '>' are ID lines, so skip
-            else:
-                seqList.append(line) # Append all other lines as these represent sequences to main list 
-    return "".join(seqList) # Return list joined as a string 
-
 # -------------------------------------------------------------------
     
 ### Working with double stranded DNA
@@ -319,7 +295,7 @@ def geneFinder(DNA: str, minLen: int):
 
 # ----------------------------------------------------------
     
-### Main
+### Main 
     
 # ----------------------------------------------------------
 
@@ -350,16 +326,18 @@ with open(sys.argv[1]) as f:
         IDList.append(tempList[0]) # Append the sequence ID
         seqList.append(''.join(tempList[1:])) # Append everything but the ID
 
-assert len(seqList) == 1
+# Keys = sequence IDs, values = coordinates of ORFs and their translated sequence 
+foundORF = {}
+
+# Find ORFs for each sequence in input file
+for seq in range(0, len(IDList)):
+    # Find threshold for ORF by calculating longest ORF seen by chance in non-coding seq 
+    minLenNonCoding = longestORFNoncoding(seqList[seq], 1500)
+
+    # Run geneFinder using the threshold value for minLenNonCoding
+    foundORF[IDList[seq]] = geneFinder(seqList[seq], minLenNonCoding)
 
 
-# Need to accomplish the 2 below in a loop. Should assign ID to seq and save everything in a dictionary. IDs = key
-    # Value = list with coord and protein sequence 
-
-# TODO: need to run longestNonCoding to find min threshold for id
-            
-# TODO: Use output from longestNonCoding to set conservative threshold for min length needed for ORF to be real 
-    # and run gene finder to find real orf.
-
-#res = geneFinder(seqList[0], 20)
-#print(res)
+for key, val in foundORF.items():
+    print(key)
+    print(val)
