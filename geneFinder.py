@@ -13,7 +13,9 @@ Created on Wed Jul 29 07:25:04 2020
 # ---------------------------------------------------------------------
 
 import random
+import sys
 from aminoAcids import *
+
 
 # ---------------------------------------------------------------------
 
@@ -315,3 +317,49 @@ def geneFinder(DNA: str, minLen: int):
     
     return finalORF
 
+# ----------------------------------------------------------
+    
+### Main
+    
+# ----------------------------------------------------------
+
+IDList = [] # List of sequence IDs
+seqList = [] # List of sequences
+
+# Open and parse input file
+with open(sys.argv[1]) as f:
+    lines = [item.strip() for item in f.readlines() if not item == '']
+    tempList = [] # List for sequences associated with each ID. Solves sequences on multiple lines issue.
+    
+    for line in lines:
+        # All Lines with sequence IDs start with '>'
+        if line.startswith('>'):  
+            # Add sequences in temp to seqList and ID to IDList when new ID encountered    
+            if not len(tempList) == 0:
+                IDList.append(tempList[0]) # Append the sequence ID
+                seqList.append(''.join(tempList[1:])) # Append everything but the ID
+                tempList = [line,] # Empty List, Add new ID to it   
+            # Add seq ID to list if it's the first sequence ID
+            else:
+                tempList = [line,]
+        # Add sequences to the tempList if no ID is encountered
+        else:
+            tempList.append(line)
+    # Handles sequence for last ID
+    else:
+        IDList.append(tempList[0]) # Append the sequence ID
+        seqList.append(''.join(tempList[1:])) # Append everything but the ID
+
+assert len(seqList) == 1
+
+
+# Need to accomplish the 2 below in a loop. Should assign ID to seq and save everything in a dictionary. IDs = key
+    # Value = list with coord and protein sequence 
+
+# TODO: need to run longestNonCoding to find min threshold for id
+            
+# TODO: Use output from longestNonCoding to set conservative threshold for min length needed for ORF to be real 
+    # and run gene finder to find real orf.
+
+#res = geneFinder(seqList[0], 20)
+#print(res)
